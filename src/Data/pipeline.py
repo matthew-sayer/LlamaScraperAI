@@ -3,12 +3,12 @@ from createDatabase import createDatabase
 from ingestData import Ingestion
 from transformData import TransformData
 
-def pipeline(ingestionPath, isWeb):
+def pipeline(ingestionPath):
     #Create an in-memory database
     conn = createDatabase(':memory:')
 
     #Ingest data from source
-    ingestionObject = Ingestion(ingestionPath, conn, isWeb)
+    ingestionObject = Ingestion(ingestionPath, conn)
     df = ingestionObject.ingestData()
     ingestionObject.insertDataToDB(df)
 
@@ -17,6 +17,5 @@ def pipeline(ingestionPath, isWeb):
     transformationObject.transformData()
 
 ingestionPath = 'https://en.wikipedia.org/wiki/Data_engineering'
-isWeb = True
 
-pipeline(ingestionPath, isWeb)
+pipeline(ingestionPath)
