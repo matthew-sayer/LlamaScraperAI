@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 import streamlit as st
 from src.Data import pipeline as datapl
 from src.AI.ConversationalAI import ConversationalAI
-from src.Orchestration.error_handling import handleErrors
+from src.Misc.error_handling import handleErrors
 
 
 st.title("WebQnA Conversational AI Tool")

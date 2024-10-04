@@ -1,8 +1,10 @@
 import duckdb
-from ..Data.createDatabase import createDatabase
-from ..Data.ingestData import Ingestion
-from ..Data.transformData import TransformData
+from src.Data.createDatabase import createDatabase
+from src.Data.ingestData import Ingestion
+from src.Data.transformData import TransformData
+from src.Orchestration.error_handling import handleErrors
 
+@handleErrors(default_return_value=None)
 def pipeline(ingestionPath):
     #Create an in-memory database
     conn = createDatabase(':memory:')
@@ -17,6 +19,5 @@ def pipeline(ingestionPath):
     ETObject.insertDataToDB(transformedDF)
 
     data = conn.execute('SELECT * FROM data').fetchdf()
-    print(data)
 
     return data
