@@ -8,18 +8,18 @@ from src.AI import ConversationalAI as ai
 
 def main():
     print("Initialising Data")
-    ingestionPath = 'https://en.wikipedia.org/wiki/Data_engineering'
+    ingestionPath = 'https://www.gutenberg.org/'
     data = datapl.pipeline(ingestionPath)
 
     print("Initialising AI")
     conversation = ai.ConversationalAI(data)
 
     while True:
-        userInput = input("Enter your question: ")
+        userInput = input("Enter your question: ") 
         if userInput == "exit":
             print("Exiting...")
             break
         response = conversation.generateResponse(userInput)
         print("Response:", response)
 
-main()
+main() 

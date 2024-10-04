@@ -13,7 +13,7 @@ class ConversationalAI:
 
         self.QAPipeline = pipeline(
             "question-answering",
-            model="distilbert-base-uncased-distilled-squad")
+            model="deepset/tinyroberta-squad2")
         print("Q&A Pipeline Initialised")
 
         print("Initialising Semantic Search")
@@ -33,8 +33,9 @@ class ConversationalAI:
         response = self.QAPipeline(
                             question=userInput,
                             context=context,
-                            max_answer_len=200)
+                            max_answer_len=4000)
         
-        output = response['answer']
+        #remove whitespace before first letter of response
+        output = re.sub(r'^\s+', '', response['answer'])
         
         return output

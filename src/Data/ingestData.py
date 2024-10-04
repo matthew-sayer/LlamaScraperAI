@@ -16,9 +16,3 @@ class Ingestion:
                         p in soupResponse.find_all('p')]}
             df = pd.DataFrame(soupData['paragraphs'], columns=['scrapedText'])
             return df
-        
-    def insertDataToDB(self, df):
-        self.conn.execute('DROP TABLE IF EXISTS data')
-        self.conn.execute('CREATE TABLE IF NOT EXISTS data \
-                          AS SELECT \
-                          * FROM df')
