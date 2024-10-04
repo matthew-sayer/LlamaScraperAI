@@ -3,3 +3,6 @@ pandas
 requests
 beautifulsoup4
 dbt-duckdb
+torch
+sentence-transformers
+transformers

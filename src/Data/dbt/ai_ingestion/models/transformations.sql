@@ -13,11 +13,20 @@ WITH source_data AS (
         ,null as column1
 
 )
-, non_nulls AS (
+
+,cleaned_data AS (
+    SELECT
+        id,
+        TRIM(REPLACE(column1, '\n', ' ')) AS column1
+    FROM
+    source_data
+)
+  
+,non_nulls AS (
     SELECT 
         *
     FROM
-        source_data
+        cleaned_data
     WHERE 
         column1 IS NOT NULL
 )

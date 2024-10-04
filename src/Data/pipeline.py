@@ -1,7 +1,7 @@
 import duckdb
-from createDatabase import createDatabase
-from ingestData import Ingestion
-from transformData import TransformData
+from ..Data.createDatabase import createDatabase
+from ..Data.ingestData import Ingestion
+from ..Data.transformData import TransformData
 
 def pipeline(ingestionPath):
     #Create an in-memory database
@@ -16,6 +16,6 @@ def pipeline(ingestionPath):
     transformationObject = TransformData()
     transformationObject.transformData()
 
-ingestionPath = 'https://en.wikipedia.org/wiki/Data_engineering'
+    data = conn.execute('SELECT * FROM data').fetchdf()
 
-pipeline(ingestionPath)
+    return data
