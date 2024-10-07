@@ -2,6 +2,8 @@
 
 Welcome to QnAScraperAI, a basic and lightweight web scraper and conversational AI tool that enables you to ask questions about a URL and up to 5 associated links.
 
+![image](https://github.com/user-attachments/assets/af5491df-5cb9-490d-93f5-b13ff15d09dc)
+
 ## Features
 
 - **Web Scraping**: Extracts data from a given URL and up to 5 associated links.
