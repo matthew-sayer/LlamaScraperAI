@@ -28,8 +28,6 @@ torch==2.4.1
 sentence-transformers==3.1.1
 transformers==4.45.1
 
-Got it. I'll update the README to include information about the model used by the bot.
-
 ## Usage
 Docker
 
