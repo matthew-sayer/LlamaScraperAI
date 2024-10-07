@@ -27,6 +27,9 @@ sentence-transformers==3.1.1
 transformers==4.45.1
 ```
 
+## Deployment
+-
+
 ### Build the Docker image:
 docker build -t qnascraperai .
 
