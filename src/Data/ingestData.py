@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup as soup
 from urllib.parse import urljoin
 import time
-from src.Orchestration.error_handling import handleErrors
+from src.Misc.error_handling import handleErrors
 
 class Ingestion:
     def __init__(self, ingestionPath, connection):

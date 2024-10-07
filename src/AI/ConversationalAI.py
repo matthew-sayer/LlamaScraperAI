@@ -2,7 +2,7 @@ from transformers import pipeline
 from sentence_transformers import SentenceTransformer, util
 import torch
 import re
-from src.Orchestration.error_handling import handleErrors
+from src.Misc.error_handling import handleErrors
 
 class ConversationalAI:
     @handleErrors()
