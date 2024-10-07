@@ -28,10 +28,10 @@ transformers==4.45.1
 ```
 
 ## Deployment
-### Build the Docker image:
+### Build the Docker image
 docker build -t qnascraperai .
 
-### Run the Docker container:
+### Run the Docker container
 docker run -p 8501:8501 qnascraperai
 
 ### Interact with the application
