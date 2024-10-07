@@ -52,6 +52,3 @@ Additionally, you can change the Semantic Search model in the same file.
 ```python
         self.semanticSearchModel = SentenceTransformer('all-MiniLM-L6-v2')
 ```
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
