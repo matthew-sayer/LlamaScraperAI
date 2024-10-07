@@ -2,13 +2,15 @@ from transformers import pipeline
 from sentence_transformers import SentenceTransformer, util
 import torch
 import re
+import logging
+
 from src.Misc.error_handling import handleErrors
 
 class ConversationalAI:
     @handleErrors()
     def __init__(self, data):
         dataString = data.to_string(index=False)
-        print("Initialising Q&A Pipeline")
+        logging.info("Data loaded successfully")
 
         self.sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', dataString)
 
@@ -16,9 +18,9 @@ class ConversationalAI:
         self.QAPipeline = pipeline(
             "question-answering",
             model="deepset/tinyroberta-squad2")
-        print("Q&A Pipeline Initialised")
+        logging.info("Q&A Pipeline Initialised")
 
-        print("Initialising Semantic Search")
+        logging.info("Initialising Semantic Search")
         self.semanticSearchModel = SentenceTransformer('all-MiniLM-L6-v2')
         self.embeddings = self.semanticSearchModel.encode(self.sentences, convert_to_tensor=True)
    
