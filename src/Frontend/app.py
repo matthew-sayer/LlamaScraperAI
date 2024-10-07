@@ -9,7 +9,7 @@ from src.AI.ConversationalAI import ConversationalAI
 from src.Misc.error_handling import handleErrors
 
 
-st.title("WebQnA Conversational AI Tool")
+st.title("QnAScraperAI - Webscraper and Conversational AI Tool")
 st.write("Select a URL to ingest data from, and then begin your Question and Answer session.")
 
 

@@ -1,5 +1,3 @@
-![image](https://github.com/user-attachments/assets/b4c9a575-363a-48c6-a2e1-9cc110aa2948)
-
 # QnAScraperAI
 
 Welcome to QnAScraperAI, a basic and lightweight web scraper and conversational AI tool that enables you to ask questions about a URL and up to 5 associated links.
@@ -27,15 +25,16 @@ beautifulsoup4==4.12.3
 torch==2.4.1
 sentence-transformers==3.1.1
 transformers==4.45.1
+```
 
 ## Usage
 Docker
 
 # Build the Docker image:
-docker build -t webqna .
+docker build -t qnascraper .
 
 # Run the Docker container:
-docker run -p 8501:8501 webqna
+docker run -p 8501:8501 qnascraper
 
 # Interact with the application
 Open your web browser and navigate to http://localhost:8501.
