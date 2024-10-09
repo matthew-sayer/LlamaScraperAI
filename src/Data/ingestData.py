@@ -6,10 +6,11 @@ import time
 from src.Misc.error_handling import handleErrors
 
 class Ingestion:
-    def __init__(self, ingestionPath, connection):
+    def __init__(self, ingestionPath, connection, maxURLs):
         self.ingestionPath = ingestionPath
         self.conn = connection
         self.visitedURLs = set()
+        self.maxURLs = maxURLs
 
     @handleErrors(default_return_value=None)
     def getPageContent(self, url):
@@ -41,14 +42,14 @@ class Ingestion:
             
             HTMLContents = self.getPageContent(currentURL)
             paragraphs, soupResponse = self.getPageParagraphs(HTMLContents)
-            paragraphsList.extend(paragraphsList)
+            paragraphsList.extend(paragraphs)
 
             newLinks = self.getPageLinks(soupResponse, currentURL)
             urlsToVisit.update(newLinks)
 
 
             for url in urlsToVisit:
-                if urlsScraped >= 5:
+                if urlsScraped >= self.maxURLs:
                     print("Max URLs scraped")
                     break
                 
