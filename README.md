@@ -2,7 +2,7 @@
 
 Welcome to QnAScraperAI, a scraper and conversational AI tool that enables you to ask questions about a URL and a specified number of associated links.
 
-![image](https://github.com/user-attachments/assets/af5491df-5cb9-490d-93f5-b13ff15d09dc)
+![image](https://github.com/user-attachments/assets/80817816-4cce-4144-bafd-1fc8d9a02224)
 
 ## Features
 
