@@ -22,6 +22,10 @@ st.write("Select a URL to scrape data from.")
 def loadData(ingestionPath, maxURLs):
     return datapl.pipeline(ingestionPath, maxURLs)
 
+@st.cache_resource
+def getConversationalAI(data):
+    return ConversationalAI(data)
+
 url = st.text_input("Enter URL to scrape data from")
 maxURLs = st.number_input("Enter the maximum number of URLs down to scrape? Set 1 for only the base URL.", min_value=1, max_value=200, value=1)
 

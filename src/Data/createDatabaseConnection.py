@@ -1,10 +1,12 @@
 import duckdb
 from src.Misc.error_handling import handleErrors
 import logging
+import streamlit as st
 
 _connection = None
 
 @handleErrors(default_return_value=None)
+@st.cache_resource
 def createDatabase(path=':memory:'):
     global _connection
     if _connection is None:

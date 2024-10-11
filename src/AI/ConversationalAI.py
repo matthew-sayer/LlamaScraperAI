@@ -60,4 +60,3 @@ class ConversationalAI:
         cleanedSentences = [sentence.replace('scrapedText', '') for sentence in filteredSentences]
 
         return '. '.join(cleanedSentences)
-    
