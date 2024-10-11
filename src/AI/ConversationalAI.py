@@ -3,8 +3,11 @@ from sentence_transformers import SentenceTransformer, util
 import torch
 import re
 import logging
+import os
 
 from src.Misc.error_handling import handleErrors
+
+accessToken = os.getenv("HUGGINGFACE_ACCESS_TOKEN")
 
 class ConversationalAI:
     @handleErrors()
@@ -16,8 +19,9 @@ class ConversationalAI:
 
 
         self.QAPipeline = pipeline(
-            "question-answering",
-            model="deepset/tinyroberta-squad2")
+            "text-generation",
+            model="meta-llama/Llama-3.2-1B",
+            token=accessToken)
         logging.info("Q&A Pipeline Initialised")
 
         logging.info("Initialising Semantic Search")
@@ -36,11 +40,24 @@ class ConversationalAI:
         context = " ".join(topScoringSentences)
 
         response = self.QAPipeline(
-                            question=userInput,
-                            context=context,
-                            max_answer_len=1000)
+                            userInput + " " + context,
+                            max_new_tokens=15,
+                            truncation=True,
+                            pad_token_id=self.QAPipeline.tokenizer.eos_token_id
+                            )
         
         #remove whitespace before first letter of response
-        output = re.sub(r'^\s+', '', response['answer'])
+        output = response[0]['generated_text'][len(userInput):]
         
-        return output
+        filteredOutput = self.filter_response(output, context)
+
+        return filteredOutput
+    
+    def filter_response(self, response, context):
+        contextSentences = set(context.split('. '))
+        responseSentences = response.split('. ')
+        filteredSentences = [sentence for sentence in responseSentences if sentence not in contextSentences]
+        cleanedSentences = [sentence.replace('scrapedText', '') for sentence in filteredSentences]
+
+        return '. '.join(cleanedSentences)
+    

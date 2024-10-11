@@ -1,0 +1,8 @@
+# .streamlit/config.toml
+
+[theme]
+primaryColor = "#1877F2"  # Facebook blue
+backgroundColor = "#3b5998"  # Facebook blue background
+secondaryBackgroundColor = "#1877F2"  # Darker Facebook blue for sidebar
+textColor = "#FFFFFF"  # White text color for good contrast
+font = "sans serif"

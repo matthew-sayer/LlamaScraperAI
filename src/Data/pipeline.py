@@ -1,13 +1,19 @@
 import duckdb
-from src.Data.createDatabase import createDatabase
+from src.Data.createDatabaseConnection import createDatabase
 from src.Data.ingestData import Ingestion
 from src.Data.transformData import TransformData
 from src.Misc.error_handling import handleErrors
+import logging
+
 
 @handleErrors(default_return_value=None)
 def pipeline(ingestionPath, maxURLs):
     #Create an in-memory database
-    conn = createDatabase(':memory:')
+    conn = createDatabase()
+
+    if conn is None:
+        logging.error("Failed to create database")
+        return None
 
    #Extract Data
     ingestionObject = Ingestion(ingestionPath, conn, maxURLs)
