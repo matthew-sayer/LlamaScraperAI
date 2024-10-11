@@ -1,14 +1,15 @@
 # QnAScraperAI
 
-Welcome to QnAScraperAI, a basic and lightweight web scraper and conversational AI tool that enables you to ask questions about a URL and up to 5 associated links.
+Welcome to QnAScraperAI, a scraper and conversational AI tool that enables you to ask questions about a URL and a specified number of associated links.
 
 ![image](https://github.com/user-attachments/assets/af5491df-5cb9-490d-93f5-b13ff15d09dc)
 
 ## Features
 
-- **Web Scraping**: Extracts data from a given URL and up to 5 associated links.
-- **Conversational AI**: Uses a question-answering pipeline to answer questions based on the scraped data.
+- **Web Scraping**: Extracts data from a given URL and links on the same page.
+- **Conversational AI**: Uses a Meta LLAMA 3 text-generation pipeline to answer questions based on the scraped data.
 - **Semantic Search**: Implements semantic search to find the most relevant context for the questions.
+- **Search Page**: Enables the user to search through the DuckDB contents held in memory.
 
 ## Requirements
 
@@ -42,12 +43,13 @@ Enter a URL to scrape data from.
 Ask questions based on the scraped data.
 
 ## Model
-The bot uses the deepset/tinyroberta-squad2 model for the question-answering pipeline. This model is a smaller, efficient version of RoBERTa fine-tuned on the SQuAD2.0 dataset, making it suitable for lightweight applications. You can configure it in the src/AI/ConversationalAI.py file to change the model it uses:
+The bot uses the meta-llama/Llama-3.2-1B model for the text generation pipeline. For this, you will need to sign up to the model on HuggingFace, and create a Huggingface Access Token environment variable. You can configure the model in the src/AI/conversationalAI.py file to change the model it uses:
 
 ```python
 self.QAPipeline = pipeline(
-            "question-answering",
-            model="deepset/tinyroberta-squad2")
+            "text-generation",
+            model="meta-llama/Llama-3.2-1B",
+            token=accessToken)
 ```
 
 Additionally, you can change the Semantic Search model in the same file.
