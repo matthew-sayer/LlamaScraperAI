@@ -28,7 +28,13 @@ if 'data' in st.session_state:
         with st.chat_message("user"):
             st.markdown(prompt) #Show user input in chat box, with 'user' role
 
-        response = st.session_state['conversation'].generateResponse(prompt)
+        response = st.session_state['conversation'].generateResponse(
+            prompt,
+            topKSetting=st.session_state.get('topKSetting', 5), #Get topKSetting from session state, or default to 5
+            temperature=st.session_state.get('temperature', 0.7),
+            topP=st.session_state.get('topP', 0.9),
+            maxLlamaTokens=st.session_state.get('maxLlamaTokens', 40)
+            )
         st.session_state['chat_history'].append({'role': 'bot', 'content': response})
         with st.chat_message("bot"):
             st.markdown(response)

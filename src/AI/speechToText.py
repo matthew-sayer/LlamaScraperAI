@@ -1,6 +1,6 @@
 from transformers import pipeline
 import io
-import ffmpeg
+#import ffmpeg
 
 class SpeechToText:
     def __init__(self):

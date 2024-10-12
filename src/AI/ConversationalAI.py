@@ -21,18 +21,20 @@ class ConversationalAI:
         self.QAPipeline = pipeline(
             "text-generation",
             model="meta-llama/Llama-3.2-1B",
-            token=accessToken)
+            token=accessToken,
+            )
         logging.info("Q&A Pipeline Initialised")
 
         logging.info("Initialising Semantic Search")
         self.semanticSearchModel = SentenceTransformer('all-MiniLM-L6-v2')
-        self.embeddings = self.semanticSearchModel.encode(self.sentences, convert_to_tensor=True)
+        self.embeddings = self.semanticSearchModel.encode(self.sentences, convert_to_tensor=True) #Tensors are arrays which are used for calculations to find similarity
+        #Tokens are the word in the sentence, embeddings are the vectors, which are numerical representations of tokens, that are used to find similarity between sentences
    
     @handleErrors(default_return_value="Error generating response.")
-    def generateResponse(self, userInput):
+    def generateResponse(self, userInput, topKSetting=5, topP=0.9, temperature=0.7, maxLlamaTokens=40):
         queryEmbeddings = self.semanticSearchModel.encode(userInput, convert_to_tensor=True) #Encodes the user input in the same way as the sentences
         scores = util.pytorch_cos_sim(queryEmbeddings, self.embeddings)[0] #Find similarity (cosine) score between input and sentences
-        topK = min(5, len(self.sentences)) #Grab the top 5 scoring similar sentences
+        topK = min(topKSetting, len(self.sentences)) #Grab the top scoring similar sentences
         topScoringResults = torch.topk(scores, k=topK) # Top k results - this has the top k scores and corresponding locations in the content (indices)
 
         topScoringSentences = [self.sentences[index] for index in topScoringResults.indices]
@@ -41,7 +43,9 @@ class ConversationalAI:
 
         response = self.QAPipeline(
                             userInput + " " + context,
-                            max_new_tokens=15,
+                            max_new_tokens=maxLlamaTokens,
+                            temperature=temperature,
+                            top_p=topP,
                             truncation=True,
                             pad_token_id=self.QAPipeline.tokenizer.eos_token_id
                             )
