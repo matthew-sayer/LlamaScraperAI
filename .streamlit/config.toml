@@ -5,4 +5,3 @@ backgroundColor = "#1E3A8A"  # Navy background
 secondaryBackgroundColor = "#374151"  # Lighter blue-gray for sidebar
 textColor = "#FFFFFF"  # White text for readability
 font = "sans serif"
-buttonColor = "#FFFFFF"

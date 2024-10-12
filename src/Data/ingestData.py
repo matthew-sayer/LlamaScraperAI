@@ -9,7 +9,7 @@ class Ingestion:
     def __init__(self, ingestionPath, connection, maxURLs):
         self.ingestionPath = ingestionPath
         self.conn = connection
-        self.visitedURLs = set()
+        self.scrapedURLs = set()
         self.maxURLs = maxURLs
 
     @handleErrors(default_return_value=None)
@@ -29,7 +29,7 @@ class Ingestion:
         links = set()
         for link in soupResponse.find_all('a', href=True):
             URL = urljoin(baseURL, link['href'])
-            if URL not in self.visitedURLs:
+            if URL not in self.scrapedURLs:
                 links.add(URL)
         return links
 
@@ -53,13 +53,14 @@ class Ingestion:
                     print("Max URLs scraped")
                     break
                 
-                if url not in self.visitedURLs:
-                        self.visitedURLs.add(url)
+                if url not in self.scrapedURLs:
+                        self.scrapedURLs.add(url)
                         time.sleep(1)
                         HTMLContents = self.getPageContent(url)
                         paragraphs, _ = self.getPageParagraphs(HTMLContents)
                         paragraphsList.extend(paragraphs)
                         urlsScraped += 1
 
-            df = pd.DataFrame(paragraphsList, columns=['scrapedText'])
-            return df
+            df = pd.DataFrame(paragraphsList, columns=['Extracted_Text'])
+            scrapedURLs = pd.DataFrame(list(self.scrapedURLs), columns=['Scraped_URLs'])
+            return df, scrapedURLs

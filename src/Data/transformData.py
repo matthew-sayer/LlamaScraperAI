@@ -12,8 +12,6 @@ class TransformData:
         transformedDF = transformedDF.dropna()
         #drop duplicates
         transformedDF = transformedDF.drop_duplicates()
-        #convert to string
-        transformedDF['scrapedText'] = transformedDF['scrapedText'].astype(str)
         #remove \n
         transformedDF = transformedDF.replace(r'\n',' ', regex=True)
         #remove excessive whitespace
@@ -43,3 +41,19 @@ class TransformData:
     @handleErrors(default_return_value=None)        
     def clearTable(self):
         self.conn.execute('DROP TABLE IF EXISTS data')
+
+    def insertURLsToHistoryDB(self, scrapedURLsDF):
+        try:
+            historyTableExists = self.conn.execute(
+                "SELECT * FROM scrapedURLs LIMIT 1"
+            ).fetchdf()
+        except:
+            historyTableExists = None
+        
+        if historyTableExists is None or historyTableExists.empty:
+            self.conn.execute('CREATE TABLE scrapedURLs \
+                              AS SELECT \
+                              * FROM scrapedURLsDF')
+        else:
+            self.conn.execute('INSERT INTO scrapedURLs \
+                              SELECT * FROM scrapedURLsDF')
