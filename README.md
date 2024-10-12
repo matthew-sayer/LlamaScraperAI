@@ -1,6 +1,6 @@
-# QnAScraperAI
+# LlamaScraperAI
 
-Welcome to QnAScraperAI, a scraper and conversational AI tool that enables you to ask questions about a URL and a specified number of associated links.
+Welcome to LlamaScraperAI, a scraper and conversational AI tool that enables you to ask questions about a URL and a specified number of associated links.
 
 ![image](https://github.com/user-attachments/assets/80817816-4cce-4144-bafd-1fc8d9a02224)
 
