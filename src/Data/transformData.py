@@ -41,7 +41,8 @@ class TransformData:
     @handleErrors(default_return_value=None)        
     def clearTable(self):
         self.conn.execute('DROP TABLE IF EXISTS data')
-
+        
+    @handleErrors(default_return_value=None) 
     def insertURLsToHistoryDB(self, scrapedURLsDF):
         try:
             historyTableExists = self.conn.execute(

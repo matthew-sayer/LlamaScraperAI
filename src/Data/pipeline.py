@@ -21,12 +21,12 @@ def pipeline(ingestionPath, maxURLs):
     
 
     #Transform and Load Data
-    ExtractTransformObject = TransformData(df, conn)
-    transformedDF = ExtractTransformObject.transformData()
-    ExtractTransformObject.insertDataToDB(transformedDF)
-    ExtractTransformObject.insertURLsToHistoryDB(scrapedURLs)
+    extractTransformObject = TransformData(df, conn)
+    transformedDF = extractTransformObject.transformData()
+    extractTransformObject.insertDataToDB(transformedDF)
+    extractTransformObject.insertURLsToHistoryDB(scrapedURLs)
 
     data = conn.execute('SELECT * FROM data').fetchdf()
     scrapedURLsDF = conn.execute('SELECT * FROM scrapedURLs').fetchdf()
 
-    return data, scrapedURLsDF
+    return data, scrapedURLsDF, extractTransformObject
