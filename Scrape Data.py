@@ -30,6 +30,9 @@ def initialiseSessionState():
         st.session_state['conversation'] = None
     if 'url' not in st.session_state:
         st.session_state['url'] = None
+    
+    if st.session_state['data'] is not None and st.session_state['conversation'] is None:
+        st.session_state['conversation'] = getConversationalAI(st.session_state['data'])
 
 initialiseSessionState()
 

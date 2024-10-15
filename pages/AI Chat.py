@@ -13,10 +13,10 @@ st.title("Chat with **Meta's Llama 3**")
 if 'chat_history' not in st.session_state:
     st.session_state['chat_history'] = []
 
-if 'data' in st.session_state:
+
+if st.session_state['data'] is not None:
     st.write("Ask a question and receive a response based on your data.")
-    st.session_state['conversation'] = ConversationalAI(st.session_state['data'])
-    
+
     #Show chat history box
     if st.session_state['chat_history']:
         for message in st.session_state['chat_history']:
