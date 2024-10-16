@@ -1,4 +1,5 @@
 from src.Misc.error_handling import handleErrors
+from src.Misc.monitorTiming import monitorTiming
 
 class TransformData:
     def __init__(self, df, conn):
@@ -6,6 +7,7 @@ class TransformData:
         self.conn = conn
 
     @handleErrors(default_return_value=None)
+    @monitorTiming
     def transformData(self):
         transformedDF = self.df
         #drop nulls
@@ -22,15 +24,18 @@ class TransformData:
         return transformedDF
     
     @handleErrors(default_return_value=None)
+    @monitorTiming
     def insertDataToDB(self, transformedDF):
         self.conn.execute('INSERT INTO data \
                             SELECT * FROM transformedDF')
             
-    @handleErrors(default_return_value=None)        
+    @handleErrors(default_return_value=None)
+    @monitorTiming        
     def clearTable(self):
         self.conn.execute('DROP TABLE IF EXISTS data')
         
-    @handleErrors(default_return_value=None) 
+    @handleErrors(default_return_value=None)
+    @monitorTiming 
     def insertURLsToHistoryDB(self, scrapedURLsDF):
         self.conn.execute('INSERT INTO scrapedURLs \
                               SELECT * FROM scrapedURLsDF')

@@ -1,6 +1,5 @@
 import streamlit as st
 from src.AI.conversationalAI import ConversationalAI
-from src.Misc.error_handling import handleErrors
 from src.AI.speechToText import SpeechToText
 
 st.set_page_config(

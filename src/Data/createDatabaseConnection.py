@@ -49,5 +49,4 @@ def getAnalyticsDB(path='analytics.db'):
     else:
         logging.info(f"Analytics database connection already exists at {path}")
 
-    
     return _analyticsDBConnection

@@ -8,10 +8,9 @@ import logging
 
 @handleErrors(default_return_value=None)
 def pipeline(ingestionPath, maxURLs):
-    #Create an in-memory database
+    #Create an in-memory scraped data database
     mainDBConn = createMainDB()
-    analyticsDBConn = getAnalyticsDB()
-
+    
     if mainDBConn is None:
         logging.error("Failed to create database")
         return None

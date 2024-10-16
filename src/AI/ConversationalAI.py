@@ -3,15 +3,17 @@ from sentence_transformers import SentenceTransformer, util
 import torch
 import re
 import logging
-from datasets import load_dataset
 import os
+from datasets import load_dataset
 
 from src.Misc.error_handling import handleErrors
+from src.Misc.monitorTiming import monitorTiming
 
 accessToken = os.getenv("HUGGINGFACE_ACCESS_TOKEN")
 
 class ConversationalAI:
     @handleErrors()
+    @monitorTiming
     def __init__(self, data):
         dataString = data.to_string(index=False)
         logging.info("Data loaded successfully")
@@ -40,6 +42,7 @@ class ConversationalAI:
         self.datasetEmbeddings = self.preprocessDatasetEmbeddings()
 
     @handleErrors(default_return_value="Error generating response.")
+    @monitorTiming
     def preprocessDatasetEmbeddings(self):
         datasetRows = [row['Answer'] for row in self.dataset['train']]
         datasetEmbeddings = self.semanticSearchModel.encode(
@@ -51,6 +54,7 @@ class ConversationalAI:
     
     #Set Processing Device
     @handleErrors(default_return_value=torch.device('cpu'))
+    @monitorTiming
     def setProcessingDevice(self):
         if torch.cuda.is_available():
             logging.info("CUDA available. Using GPU for processing.")
@@ -62,6 +66,7 @@ class ConversationalAI:
             return torch.device('cpu')
     
     @handleErrors(default_return_value="Error generating response.")
+    @monitorTiming
     def generateResponse(self, userInput, topKSetting=5, topP=0.9, temperature=0.7, maxLlamaTokens=40):
         queryEmbeddings = self.semanticSearchModel.encode(
             userInput,

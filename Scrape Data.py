@@ -10,6 +10,7 @@ from src.Data import pipeline as datapl
 from src.Data.transformData import TransformData
 from src.AI.conversationalAI import ConversationalAI
 from src.Misc.error_handling import handleErrors
+from src.Data.analyticsService import AnalyticsService
 
 
 st.set_page_config(
@@ -32,6 +33,9 @@ def initialiseSessionState():
         st.session_state['url'] = None
     if 'transform' not in st.session_state:
         st.session_state['transform'] = None
+    if 'analyticsService' not in st.session_state:
+        st.session_state['analyticsService'] = AnalyticsService()
+    
     
     if st.session_state['data'] is not None and st.session_state['conversation'] is None:
         st.session_state['conversation'] = getConversationalAI(st.session_state['data'])
@@ -48,7 +52,7 @@ def getConversationalAI(data):
     return ConversationalAI(data)
 
 url = st.text_input("Enter URL to scrape data from")
-maxURLs = st.number_input("Enter the maximum number of URLs down to scrape? Set 0 for only the base URL.", min_value=0, max_value=200, value=0)
+maxURLs = st.number_input("Please enter the maximum number of URL levels down to scrape. Set 0 for only the base URL.", min_value=0, max_value=200, value=0)
 
 if st.button("Scrape Data from URL"):
     data, scrapedURLs, extractTransformObject = loadData(url, maxURLs)

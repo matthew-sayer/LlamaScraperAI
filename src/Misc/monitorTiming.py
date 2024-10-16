@@ -8,7 +8,8 @@ def monitorTiming(func):
     def wrapper(*args, **kwargs): #The args and kwargs will allow us to pass any number of arguments to a function
 
         analyticsDBConnection = getAnalyticsDB()
-        funcName = func.__name__
+        className = args[0].__class__.__name__ if args else 'UnknownClass'
+        funcName = f"{className}.{func.__name__}"
 
         if analyticsDBConnection is None:
             logging.error("Failed to connect to analytics DB")
