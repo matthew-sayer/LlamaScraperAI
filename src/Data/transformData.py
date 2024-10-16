@@ -23,20 +23,8 @@ class TransformData:
     
     @handleErrors(default_return_value=None)
     def insertDataToDB(self, transformedDF):
-        try:
-            tableExists = self.conn.execute(
-                "SELECT * FROM data LIMIT 1"
-            ).fetchdf()
-        except:
-            tableExists = None
-
-        if tableExists is None or tableExists.empty:
-            self.conn.execute('CREATE TABLE data \
-                            AS SELECT \
-                            * FROM transformedDF')
-        else:
-            self.conn.execute('INSERT INTO data \
-                              SELECT * FROM transformedDF')
+        self.conn.execute('INSERT INTO data \
+                            SELECT * FROM transformedDF')
             
     @handleErrors(default_return_value=None)        
     def clearTable(self):
@@ -44,17 +32,5 @@ class TransformData:
         
     @handleErrors(default_return_value=None) 
     def insertURLsToHistoryDB(self, scrapedURLsDF):
-        try:
-            historyTableExists = self.conn.execute(
-                "SELECT * FROM scrapedURLs LIMIT 1"
-            ).fetchdf()
-        except:
-            historyTableExists = None
-        
-        if historyTableExists is None or historyTableExists.empty:
-            self.conn.execute('CREATE TABLE scrapedURLs \
-                              AS SELECT \
-                              * FROM scrapedURLsDF')
-        else:
-            self.conn.execute('INSERT INTO scrapedURLs \
+        self.conn.execute('INSERT INTO scrapedURLs \
                               SELECT * FROM scrapedURLsDF')

@@ -3,19 +3,51 @@ from src.Misc.error_handling import handleErrors
 import logging
 import streamlit as st
 
-_connection = None
+_mainDBConnection = None
+_analyticsDBConnection = None
 
 @handleErrors(default_return_value=None)
 @st.cache_resource
-def createDatabase(path=':memory:'):
-    global _connection
-    if _connection is None:
+def createMainDB(path=':memory:'):
+    global _mainDBConnection
+    if _mainDBConnection is None:
         try:
-            _connection = duckdb.connect(path)
+            _mainDBConnection = duckdb.connect(path)
             logging.info(f"Connected to database at {path}")
+            _mainDBConnection.execute("CREATE TABLE IF NOT EXISTS data (Extracted_Text TEXT)")
+            _mainDBConnection.execute("CREATE TABLE IF NOT EXISTS scrapedURLs (URL TEXT)")
         except:
             logging.error(f"Failed to connect to database at {path}")
-            _connection = None
+            _mainDBConnection = None
     else:
         logging.info(f"Database connection already exists at {path}")
-    return _connection
+
+    return _mainDBConnection
+
+@handleErrors(default_return_value=None)
+@st.cache_resource
+def getAnalyticsDB(path='analytics.db'):
+    global _analyticsDBConnection
+
+    if _analyticsDBConnection is None:
+        try:
+            _analyticsDBConnection = duckdb.connect(path)
+            logging.info(f"Connected to analytics database at {path}")
+            _analyticsDBConnection.execute("CREATE TABLE IF NOT EXISTS \
+                                  performanceMonitor \
+                                  (Start_Time DATETIME, \
+                                    Function_Name TEXT , \
+                                    Time_Taken DOUBLE, \
+                                    Run_Success BOOLEAN)"
+                                )
+        except duckdb.Error as e:
+            logging.error(f"Failed to connect to database at {path}: {e}")
+            _analyticsDBConnection = None
+        except Exception as e:
+            logging.error(f"Unexpected error while connecting to database at {path}: {e}")
+            _analyticsDBConnection = None
+    else:
+        logging.info(f"Analytics database connection already exists at {path}")
+
+    
+    return _analyticsDBConnection

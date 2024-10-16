@@ -80,6 +80,10 @@ ipython_config.py
 # pyenv
 .python-version
 
+#duckdb
+analytics.db
+analytics.db.wal
+
 # celery beat schedule file
 celerybeat-schedule
 
