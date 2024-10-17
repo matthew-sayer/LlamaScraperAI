@@ -4,7 +4,9 @@ import torch
 import re
 import logging
 import os
+import uuid
 from datasets import load_dataset
+import streamlit as st
 
 from src.Misc.error_handling import handleErrors
 from src.Misc.monitorTiming import monitorTiming
@@ -34,6 +36,9 @@ class ConversationalAI:
             device=0 if self.device == torch.device('cuda') else -1 #-1 because that is the default value for CPU
             )
         logging.info("Q&A Pipeline Initialised")
+
+        self.analyticsService = st.session_state['analyticsService']
+        
     
     #Dataset Processing
     @handleErrors(default_return_value="Error loading dataset.")
@@ -58,16 +63,15 @@ class ConversationalAI:
     def setProcessingDevice(self):
         if torch.cuda.is_available():
             logging.info("CUDA available. Using GPU for processing.")
-            print("USING CUDA")
             return torch.device('cuda')
         else:
             logging.info("CUDA is NOT available. Defaulting to CPU for processing.")
-            print("USING CPU")
             return torch.device('cpu')
     
     @handleErrors(default_return_value="Error generating response.")
     @monitorTiming
     def generateResponse(self, userInput, topKSetting=5, topP=0.9, temperature=0.7, maxLlamaTokens=40):
+        messageID = str(uuid.uuid4()) #Generate message ID
         queryEmbeddings = self.semanticSearchModel.encode(
             userInput,
             convert_to_tensor=True,
@@ -100,4 +104,28 @@ class ConversationalAI:
         #remove whitespace before first letter of response
         output = response[0]['generated_text'][len(userInput):].strip()
         
+        #invoke auto evaluation
+        try:
+            self.AutoEvaluateResponse(messageID, userInput, output)
+        except Exception as e:
+            logging.error(f"Failed to autoevaluate response: {e}")
+    
         return output
+    
+    #@handleErrors(default_return_value=None)
+    @monitorTiming
+    def AutoEvaluateResponse(self, messageID, userInput, output):
+        try:
+            #Create encoded embeddings for the user input and output
+            inputEmbeddings = self.semanticSearchModel.encode(userInput, convert_to_tensor=True)
+            outputEmbeddings = self.semanticSearchModel.encode(output, convert_to_tensor=True)
+            #Work out the cosine similarity to score it
+            cosineSimilarity = util.pytorch_cos_sim(inputEmbeddings, outputEmbeddings).item() #item will get the tensor value
+
+            self.analyticsService.automatedEvaluation(messageID, userInput, output, cosineSimilarity)
+
+        except Exception as e:
+            logging.error(f"Failed to autoevaluate response: {e}")
+            return None
+        
+        return cosineSimilarity

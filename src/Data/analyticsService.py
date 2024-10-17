@@ -9,12 +9,35 @@ class AnalyticsService:
         self.analyticsDBconn = getAnalyticsDB()
     
     @handleErrors(default_return_value=None)
-    def retrieveData(self, columnsInput="*", filters=""):
+    def retrievePerformanceData(self, columnsInput="*", filters=""):
 
         try:
             query = f"SELECT {columnsInput} FROM performanceMonitor {filters}"
             return self.analyticsDBconn.execute(query).fetchdf()
         
         except Exception as e:
-            logging.error(f"Failed to retrieve data from analytics DB: {e}")
+            logging.error(f"Failed to retrieve data from performance data table: {e}")
+            return None
+        
+    def retrieveAutoEvaluationData(self, columnsInput="*", filters=""):
+        try:
+            query = f"SELECT {columnsInput} FROM autoEvaluation {filters}"
+            return self.analyticsDBconn.execute(query).fetchdf()
+        except Exception as e:
+            logging.error("Failed to retrieve data from autoEvaluation table: {e}")
+        
+        
+    @handleErrors(default_return_value=None)
+    def automatedEvaluation(self, messageID, userInput, output, cosineSimilarity):
+        try:
+            self.analyticsDBconn.execute("""INSERT INTO autoEvaluation \
+                                         (MessageID \
+                                         ,UserInput \
+                                         ,Response \
+                                         ,SimilarityScore \
+                                         ) \
+                                         VALUES (?, ?, ?, ?)""",
+                                         (messageID, userInput, output, cosineSimilarity))
+        except Exception as e:
+            logging.error(f"Failed to insert data into autoEvaluation table: {e}")
             return None

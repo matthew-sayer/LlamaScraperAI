@@ -33,13 +33,7 @@ def getAnalyticsDB(path='analytics.db'):
         try:
             _analyticsDBConnection = duckdb.connect(path)
             logging.info(f"Connected to analytics database at {path}")
-            _analyticsDBConnection.execute("CREATE TABLE IF NOT EXISTS \
-                                  performanceMonitor \
-                                  (Start_Time DATETIME, \
-                                    Function_Name TEXT , \
-                                    Time_Taken DOUBLE, \
-                                    Run_Success BOOLEAN)"
-                                )
+            createAnalyticsTables(_analyticsDBConnection)
         except duckdb.Error as e:
             logging.error(f"Failed to connect to database at {path}: {e}")
             _analyticsDBConnection = None
@@ -50,3 +44,39 @@ def getAnalyticsDB(path='analytics.db'):
         logging.info(f"Analytics database connection already exists at {path}")
 
     return _analyticsDBConnection
+
+@handleErrors(default_return_value=None)
+def createAnalyticsTables(_analyticsDBConnection):
+    try:
+        _analyticsDBConnection.execute("""CREATE TABLE IF NOT EXISTS \
+                                performanceMonitor \
+                                (Start_Time DATETIME \
+                                ,Function_Name TEXT  \
+                                ,Time_Taken DOUBLE \
+                                ,Run_Success BOOLEAN \
+                                )""")
+        
+        _analyticsDBConnection.execute("""CREATE TABLE IF NOT EXISTS \
+                                        autoEvaluation \
+                                        (MessageID STRING PRIMARY KEY \
+                                        ,UserInput TEXT \
+                                        ,Response TEXT \
+                                        ,SimilarityScore DOUBLE \
+                                        ,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP \
+                                       )""")
+        
+        _analyticsDBConnection.execute("""CREATE TABLE IF NOT EXISTS \
+                                        manualEvaluation \
+                                        (MessageID STRING PRIMARY KEY \
+                                        ,UserInput TEXT \
+                                        ,Response TEXT \
+                                        ,UserIntent TEXT \
+                                        ,Precision DOUBLE \
+                                        ,Recall DOUBLE \
+                                        ,F1Score DOUBLE \
+                                        ,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP \
+                                       )""")
+        logging.info("Tables created in analytics database")
+    except duckdb.Error as e:
+        logging.error(f"Failed to create tables in analytics database: {e}")
+        return None

@@ -48,8 +48,8 @@ def loadData(ingestionPath, maxURLs):
     return datapl.pipeline(ingestionPath, maxURLs)
 
 @st.cache_resource
-def getConversationalAI(data):
-    return ConversationalAI(data)
+def getConversationalAI(data, analyticsService):
+    return ConversationalAI(data, analyticsService)
 
 url = st.text_input("Enter URL to scrape data from")
 maxURLs = st.number_input("Please enter the maximum number of URL levels down to scrape. Set 0 for only the base URL.", min_value=0, max_value=200, value=0)

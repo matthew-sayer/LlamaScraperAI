@@ -7,6 +7,7 @@ st.set_page_config(
     page_icon = "🤖",
     initial_sidebar_state="expanded"
 )
+
 st.title("Chat with **Meta's Llama 3**")
 
 if 'chat_history' not in st.session_state:
