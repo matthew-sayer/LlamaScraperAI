@@ -64,16 +64,16 @@ def createAnalyticsTables(_analyticsDBConnection):
                                         ,SimilarityScore DOUBLE \
                                         ,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP \
                                        )""")
-        
+
         _analyticsDBConnection.execute("""CREATE TABLE IF NOT EXISTS \
                                         manualEvaluation \
                                         (MessageID STRING PRIMARY KEY \
                                         ,UserInput TEXT \
-                                        ,Response TEXT \
                                         ,UserIntent TEXT \
-                                        ,Precision DOUBLE \
-                                        ,Recall DOUBLE \
-                                        ,F1Score DOUBLE \
+                                        ,Response TEXT \
+                                        ,UserScore TEXT \
+                                        ,IntentSimilarity DOUBLE \
+                                        ,TestResult TEXT \
                                         ,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP \
                                        )""")
         logging.info("Tables created in analytics database")

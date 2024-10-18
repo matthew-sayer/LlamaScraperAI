@@ -1,4 +1,4 @@
-from transformers import pipeline
+from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from sentence_transformers import SentenceTransformer, util
 import torch
 import re
@@ -17,45 +17,43 @@ class ConversationalAI:
     @handleErrors()
     @monitorTiming
     def __init__(self, data):
-        dataString = data.to_string(index=False)
-        logging.info("Data loaded successfully")
+        try:
+            dataString = data.to_string(index=False)
+            logging.info("Data loaded successfully")
 
-        self.sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', dataString)
+            self.sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', dataString)
 
-        logging.info("Initialising Semantic Search")
-        self.semanticSearchModel = SentenceTransformer('all-MiniLM-L6-v2')
-        self.embeddings = self.semanticSearchModel.encode(self.sentences, convert_to_tensor=True) #Tensors are arrays which are used for calculations to find similarity
-        #Tokens are the word in the sentence, embeddings are the vectors, which are numerical representations of tokens, that are used to find similarity between sentences
-        #self.loadDataset()
-        self.device = self.setProcessingDevice()
-        
-        self.QAPipeline = pipeline(
-            "text-generation",
-            model="meta-llama/Llama-3.2-1B",
-            token=accessToken,
-            device=0 if self.device == torch.device('cuda') else -1 #-1 because that is the default value for CPU
+            logging.info("Initialising Semantic Search")
+            self.semanticSearchModel = SentenceTransformer('all-MiniLM-L6-v2')
+            self.embeddings = self.semanticSearchModel.encode(self.sentences, convert_to_tensor=True) #Tensors are arrays which are used for calculations to find similarity
+            #Tokens are the word in the sentence, embeddings are the vectors, which are numerical representations of tokens, that are used to find similarity between sentences
+            self.device = self.setProcessingDevice()
+
+            quantisationConfig = BitsAndBytesConfig(load_in_4bit=True)
+            print("Initialising quantisation config")
+
+            self.model = AutoModelForCausalLM.from_pretrained(
+                "meta-llama/Llama-3.2-1B",
+                quantization_config=quantisationConfig
             )
-        logging.info("Q&A Pipeline Initialised")
+            print("Model initialised and quantised")
 
-        self.analyticsService = st.session_state['analyticsService']
-        
-    
-    #Dataset Processing
-    @handleErrors(default_return_value="Error loading dataset.")
-    def loadDataset(self):
-        self.dataset = load_dataset("MuskumPillerum/General-Knowledge")
-        self.datasetEmbeddings = self.preprocessDatasetEmbeddings()
+            self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.2-1B") # This is a tokenizer, which turns text into tokens
+            print("Tokenizer initialised")
+            
+            self.QAPipeline = pipeline(
+                "text-generation",
+                model=self.model,
+                token=accessToken,
+                tokenizer=self.tokenizer,
+                #device=0 if self.device == torch.device('cuda') else -1 #-1 because that is the default value for CPU
+                )
+            print("Q&A Pipeline initialised")
+            logging.info("Q&A Pipeline Initialised")
 
-    @handleErrors(default_return_value="Error generating response.")
-    @monitorTiming
-    def preprocessDatasetEmbeddings(self):
-        datasetRows = [row['Answer'] for row in self.dataset['train']]
-        datasetEmbeddings = self.semanticSearchModel.encode(
-            datasetRows,
-            convert_to_tensor=True,
-            batch_size=16
-        ).to(self.device)
-        return {'rows': datasetRows, 'embeddings': datasetEmbeddings}
+            self.analyticsService = st.session_state['analyticsService']
+        except Exception as e:
+            logging.error(f"Failed to initialise Conversational AI: {e}")
     
     #Set Processing Device
     @handleErrors(default_return_value=torch.device('cpu'))
@@ -86,10 +84,6 @@ class ConversationalAI:
 
         context = " ".join(topScoringSentences)
 
-        #dataset = util.pytorch_cos_sim(queryEmbeddings, self.datasetEmbeddings['embeddings'])[0]
-        #torchResult = torch.topk(dataset, k=5) #Top 5 results
-        #datasetContext = self.datasetEmbeddings['rows'][torchResult.indices[0]][:100] #Take the first 100 characters
-
         combinedDataContext = f"{userInput} {context}"
 
         response = self.QAPipeline(
@@ -109,10 +103,14 @@ class ConversationalAI:
             self.AutoEvaluateResponse(messageID, userInput, output)
         except Exception as e:
             logging.error(f"Failed to autoevaluate response: {e}")
+
+        st.session_state['lastResponse'] = output
+        st.session_state['lastMessageID'] = messageID
+        st.session_state['lastUserInput'] = userInput
     
         return output
     
-    #@handleErrors(default_return_value=None)
+    @handleErrors(default_return_value=None)
     @monitorTiming
     def AutoEvaluateResponse(self, messageID, userInput, output):
         try:
@@ -129,3 +127,48 @@ class ConversationalAI:
             return None
         
         return cosineSimilarity
+    
+    @handleErrors(default_return_value=None)
+    @monitorTiming   
+    def getManualFeedback(self, userScore, userIntent):
+        print("function getManualFeedback called")
+        userInput = st.session_state['lastUserInput']
+        output = st.session_state['lastResponse']
+        messageID = st.session_state['lastMessageID']
+        try:
+            intentSimilarity = self.extractIntent(output, userIntent)
+            print("intent similarity gathered", intentSimilarity)
+            TestResult = self.categoriseAccuracy(userScore, intentSimilarity)
+            print("test result", TestResult)
+            self.analyticsService.manualEvaluation(messageID, userInput, userIntent, output, userScore, intentSimilarity, TestResult)
+            print("manual evaluation insert attempted done with fields", messageID, userInput, userIntent, output, userScore, intentSimilarity, TestResult)
+
+        except Exception as e:
+            logging.error(f"Failed to extract intent similarity: {e}")
+            return None
+        
+
+    
+    @handleErrors(default_return_value=None)
+    @monitorTiming   
+    def extractIntent(self, output, userIntent):
+        outputEmbeddings = self.semanticSearchModel.encode(output, convert_to_tensor=True)
+        userFeedbackEmbeddings = self.semanticSearchModel.encode(userIntent, convert_to_tensor=True)
+
+        intentSimilarity = util.pytorch_cos_sim(outputEmbeddings, userFeedbackEmbeddings).item()
+
+        return intentSimilarity
+    
+    @handleErrors(default_return_value=None)
+    @monitorTiming   
+    def categoriseAccuracy(self, userScore, intentSimilarity):
+        if intentSimilarity > 0.5 and userScore == "Good":
+            TestResult = "True Positive" #Great match - user said it was good, and it's similar to their intent
+        elif intentSimilarity <= 0.5 and userScore == "Good":
+            TestResult = "False Positive" #Good match - user liked it, but it wasn't similar to their original intent
+        elif intentSimilarity > 0.5 and userScore == "Bad":
+            TestResult = "False Negative" #Similar, but user didn't like it
+        elif intentSimilarity <= 0.5 and userScore == "Bad":
+            TestResult = "True Negative" #Not similar, and user didn't like it. Bad response.
+
+        return TestResult

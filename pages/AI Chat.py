@@ -8,6 +8,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+if 'feedbackSubmitted' not in st.session_state:
+    st.session_state['feedbackSubmitted'] = False #Initialise feedback submission state
+
+if 'responseGenerated' not in st.session_state:
+    st.session_state['responseGenerated'] = False
+
+def resetFeedbackSubmission():
+    st.session_state['feedbackSubmitted'] = False
+
+def createFeedbackSubmission():
+    st.session_state['feedbackSubmitted'] = True
+
+
 st.title("Chat with **Meta's Llama 3**")
 
 if 'chat_history' not in st.session_state:
@@ -19,7 +32,7 @@ if st.session_state['data'] is not None:
 
     #Show chat history box
     if st.session_state['chat_history']:
-        for message in st.session_state['chat_history']:
+        for idx, message in enumerate(st.session_state['chat_history']): #iterate through chat history
             with st.chat_message(message['role']):
                 st.markdown(message['content'])
     
@@ -36,8 +49,37 @@ if st.session_state['data'] is not None:
                 maxLlamaTokens=st.session_state.get('maxLlamaTokens', 40)
                 )
         st.session_state['chat_history'].append({'role': 'bot', 'content': response})
+        st.session_state['responseGenerated'] = True
+        
         with st.chat_message("bot"):
             st.markdown(response)
+
+    if st.session_state['responseGenerated']:
+        with st.form(key="feedback"):
+        #Collect feedback
+            userScore = st.radio("Was this response accurate?", ["👍", "👎"])
+            intent = st.text_input("What did you want to find out about?")
+            submitButton = st.form_submit_button("Submit Feedback", on_click=createFeedbackSubmission)
+
+            if submitButton:
+                createFeedbackSubmission()
+                
+        if st.session_state['feedbackSubmitted']:
+            st.write("Feedback submitted")
+            print("Form submitted")
+            if userScore == "👍":
+                userScore = "Good"
+            elif userScore == "👎":
+                userScore = "Bad"
+
+            st.write(f"User Score: {userScore}, Intent: {intent}")  # Debugging line
+            print(f"User Score: {userScore}, Intent: {intent}")  # Debugging line
+            try:
+                st.session_state['conversation'].getManualFeedback(userScore, intent)
+                st.write("Feedback submitted")
+                resetFeedbackSubmission()
+            except Exception as e:
+                st.write(f"Error: Feedback not submitted: {e}")
 
     
     #audioRecording = st.experimental_audio_input("Record a question with your voice")
