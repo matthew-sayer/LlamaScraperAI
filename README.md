@@ -2,7 +2,7 @@
 
 Welcome to LlamaScraperAI, a scraper and conversational AI tool that enables you to ask questions about a URL and a specified number of associated links.
 
-![image](https://github.com/user-attachments/assets/80817816-4cce-4144-bafd-1fc8d9a02224)
+![image](https://github.com/user-attachments/assets/bc5715a4-2ffe-4621-9e0d-f2f3ce9de7c1)
 
 ## Features
 
@@ -10,6 +10,8 @@ Welcome to LlamaScraperAI, a scraper and conversational AI tool that enables you
 - **Conversational AI**: Uses a Meta LLAMA 3 text-generation pipeline to answer questions based on the scraped data.
 - **Semantic Search**: Implements semantic search to find the most relevant context for the questions.
 - **Search Page**: Enables the user to search through the DuckDB contents held in memory.
+- **Automated and manual evaluation**: Enables scoring of AI chat responses against input similarity, and then manual scoring against user feedback and stated intent.
+- **Analytics Page**: Enables the user to query the automated evaluation and manual evaluation tables with customisable SQL.
 
 ## Requirements
 
@@ -17,18 +19,7 @@ Welcome to LlamaScraperAI, a scraper and conversational AI tool that enables you
 
 ### Python Packages
 
-The required Python packages are listed in the `requirements.txt` file:
-
-```txt
-streamlit==1.39.0
-duckdb==1.1.1
-pandas==2.2.3
-requests==2.32.3
-beautifulsoup4==4.12.3
-torch==2.4.1
-sentence-transformers==3.1.1
-transformers==4.45.1
-```
+The required Python packages are listed in the `requirements.txt` file.
 
 ## Deployment
 ### Build the Docker image
