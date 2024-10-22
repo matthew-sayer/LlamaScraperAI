@@ -65,3 +65,17 @@ class AnalyticsService:
         except Exception as e:
             logging.error(f"Failed to insert data into manualEvaluation table: {e}")
             return None
+        
+    def getTruePositiveResponses(self):
+        try:
+            return self.analyticsDBconn.execute("""SELECT \
+                                                UserInput \
+                                                ,Response \
+                                            FROM
+                                                manualEvaluation \
+                                            WHERE
+                                                TestResult = 'True Positive'
+                                                """).fetchdf()
+        except Exception as e:
+            logging.error(f"Failed to get true positive responses: {e}")
+            return None

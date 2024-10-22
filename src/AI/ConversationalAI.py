@@ -52,6 +52,9 @@ class ConversationalAI:
             logging.info("Q&A Pipeline Initialised")
 
             self.analyticsService = st.session_state['analyticsService']
+
+            self.topResponses = self.analyticsService.getTruePositiveResponses()
+
         except Exception as e:
             logging.error(f"Failed to initialise Conversational AI: {e}")
     
