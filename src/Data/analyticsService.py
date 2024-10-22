@@ -62,9 +62,6 @@ class AnalyticsService:
                                          ,TestResult)
                                          VALUES (?,?,?,?,?,?,?)""",
                                          (messageID, userInput, userScore, output, userIntent, intentSimilarity, TestResult))
-            
-            values = (messageID, userInput, userScore, output, userIntent, intentSimilarity, TestResult)
-            print(values)
         except Exception as e:
             logging.error(f"Failed to insert data into manualEvaluation table: {e}")
             return None

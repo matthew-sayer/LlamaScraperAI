@@ -52,7 +52,7 @@ def getConversationalAI(data, analyticsService):
     return ConversationalAI(data, analyticsService)
 
 url = st.text_input("Enter URL to scrape data from")
-maxURLs = st.number_input("Please enter the maximum number of URL levels down to scrape. Set 0 for only the base URL.", min_value=0, max_value=200, value=0)
+maxURLs = st.number_input("Please enter the maximum number of URL levels down to scrape. Set 1 for only the base URL.", min_value=1, max_value=200, value=1)
 
 if st.button("Scrape Data from URL"):
     data, scrapedURLs, extractTransformObject = loadData(url, maxURLs)

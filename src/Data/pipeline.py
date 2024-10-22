@@ -5,6 +5,8 @@ from src.Data.transformData import TransformData
 from src.Misc.error_handling import handleErrors
 import logging
 
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 @handleErrors(default_return_value=None)
 def pipeline(ingestionPath, maxURLs):
@@ -16,6 +18,7 @@ def pipeline(ingestionPath, maxURLs):
         return None
 
    #Extract Data
+    logging.info("Initialising ingestion object")
     ingestionObject = Ingestion(ingestionPath, mainDBConn, maxURLs)
     df, scrapedURLs = ingestionObject.ingestData()
     

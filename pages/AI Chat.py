@@ -65,15 +65,10 @@ if st.session_state['data'] is not None:
                 createFeedbackSubmission()
                 
         if st.session_state['feedbackSubmitted']:
-            st.write("Feedback submitted")
-            print("Form submitted")
             if userScore == "👍":
                 userScore = "Good"
             elif userScore == "👎":
                 userScore = "Bad"
-
-            st.write(f"User Score: {userScore}, Intent: {intent}")  # Debugging line
-            print(f"User Score: {userScore}, Intent: {intent}")  # Debugging line
             try:
                 st.session_state['conversation'].getManualFeedback(userScore, intent)
                 st.write("Feedback submitted")

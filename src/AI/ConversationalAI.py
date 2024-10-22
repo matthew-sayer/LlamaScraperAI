@@ -97,6 +97,8 @@ class ConversationalAI:
         
         #remove whitespace before first letter of response
         output = response[0]['generated_text'][len(userInput):].strip()
+        output = re.sub(r'\s+', ' ', output)
+        output = output.replace('Extracted_Text', '').strip()
         
         #invoke auto evaluation
         try:
