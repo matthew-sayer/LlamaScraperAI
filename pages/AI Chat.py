@@ -40,7 +40,7 @@ if st.session_state['data'] is not None:
         st.session_state['chat_history'].append({'role': 'user', 'content': prompt})
         with st.chat_message("user"):
             st.markdown(prompt) #Show user input in chat box, with 'user' role
-        with st.spinner("Generating response, please wait as it's a slow and powerful model..."):
+        with st.spinner("Generating response, please wait..."):
             response = st.session_state['conversation'].generateResponse(
                 prompt,
                 topKSetting=st.session_state.get('topKSetting', 5), #Get topKSetting from session state, or default to 5
