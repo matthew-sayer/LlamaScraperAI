@@ -20,4 +20,4 @@ ENV PYTHONPATH=/app
 EXPOSE 8501
 
 # Command to run the Streamlit app
-CMD ["streamlit", "run", "Ingest Data.py"]
+CMD ["streamlit", "run", "Scrape Data.py"]
