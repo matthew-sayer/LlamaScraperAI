@@ -1,6 +1,5 @@
 import streamlit as st
 from src.AI.conversationalAI import ConversationalAI
-from src.AI.speechToText import SpeechToText
 
 st.set_page_config(
     page_title = "AI Chat",
@@ -75,21 +74,6 @@ if st.session_state['data'] is not None:
                 resetFeedbackSubmission()
             except Exception as e:
                 st.write(f"Error: Feedback not submitted: {e}")
-
-    
-    #audioRecording = st.experimental_audio_input("Record a question with your voice")
-    #if audioRecording:
-     #   st.audio(audioRecording)
-      #  transcribedAudio = SpeechToText().convertAudioToText(audioRecording)
-       # st.session_state['chat_history'].append({'role': 'user', 'content': transcribedAudio})
-
-        #with st.chat_message("user"):
-         #   st.markdown(transcribedAudio)
-        
-        #response = st.session_state['conversation'].generateResponse(transcribedAudio)
-        #st.session_state['chat_history'].append({'role': 'bot', 'content': response})
-        #with st.chat_message("bot"):
-         #   st.markdown(response)
 
 else:
     st.write("Please go to the Ingest Data page to scrape data first")
