@@ -102,6 +102,8 @@ class ConversationalAI:
         output = response[0]['generated_text'][len(userInput):].strip()
         output = re.sub(r'\s+', ' ', output)
         output = output.replace('Extracted_Text', '').strip()
+        #Remove last words after the last full stop
+        output = output[:output.rfind('.')+1]
         
         #invoke auto evaluation
         try:

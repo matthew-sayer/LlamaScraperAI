@@ -36,7 +36,7 @@ class Ingestion:
         try:
             # Set up Chrome options
             driverOptions = Options()
-            driverOptions.headless = True  # Running in headless mode for efficiency
+            driverOptions.add_argument("--headless")  # Running in headless mode for efficiency
 
             # Initialize the WebDriver with Chrome
             chrome_driver_version = "130.0.6723.5800"
@@ -125,11 +125,13 @@ class Ingestion:
                     for table in tables:
                         df = pd.read_html(table.get_attribute('outerHTML'))[0] #Get the outerHTML of the table and put it into a DF
                         paragraphsList.append({"Table": df}) #Add the table to the list of paragraphs
-                        
-                    newLinksToScrape = self.getPageLinks(currentURL) #Get the page links available
-                    for newURL in newLinksToScrape:
-                            if newURL not in self.scrapedURLs and newURL not in urlsToVisit:
-                                urlsToVisit.append(newURL) #Add new URL to the list of URLs to visit
+                    
+                    if self.maxURLs >1:
+                        newLinksToScrape = self.getPageLinks(currentURL) #Get the page links available
+                        for newURL in newLinksToScrape:
+                                    if newURL not in self.scrapedURLs and newURL not in urlsToVisit:
+                                        urlsToVisit.append(newURL) #Add new URL to the list of URLs to visit
+                    
                     self.scrapedURLs.add(currentURL)
 
                     if not paragraphsList:

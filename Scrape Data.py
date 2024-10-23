@@ -52,7 +52,11 @@ def getConversationalAI(data, analyticsService):
     return ConversationalAI(data, analyticsService)
 
 url = st.text_input("Enter URL to scrape data from")
-maxURLs = st.number_input("Please enter the maximum number of URL levels down to scrape. Set 1 for only the base URL.", min_value=1, max_value=200, value=1)
+maxURLs = st.number_input("Please enter the maximum number of URLs to scrape from the page. Set to 1 for only the base URL.",
+                            min_value=1,
+                            max_value=200,
+                            value=1
+                            )
 
 if st.button("Scrape Data from URL"):
     data, scrapedURLs, extractTransformObject = loadData(url, maxURLs)
@@ -68,10 +72,13 @@ if not st.session_state['scrapedURLs'].empty:
     st.write("Scraped URLs:")
     st.table(st.session_state['scrapedURLs'])
 
-if st.button("Clear Data"):
-    if 'transform' in st.session_state and st.session_state['transform'] is not None:
-        st.session_state['transform'].clearTable()
-        st.session_state['data'] = None
-        st.write("Data cleared successfully.")
-    else:
-        st.write("No data to clear.")
+if st.session_state['data'] is not None:
+    if st.button("Clear Data"):
+        if 'transform' in st.session_state and st.session_state['transform'] is not None:
+            st.session_state['transform'].clearTable()
+            st.session_state['data'] = None
+            st.session_state['scrapedURLs'] = pd.DataFrame()
+            st.write("Data cleared successfully.")
+            st.rerun()
+        else:
+            st.write("No data to clear.")

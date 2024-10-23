@@ -32,7 +32,8 @@ class TransformData:
     @handleErrors(default_return_value=None)
     @monitorTiming        
     def clearTable(self):
-        self.conn.execute('DROP TABLE IF EXISTS data')
+        self.conn.execute('TRUNCATE TABLE data')
+        self.conn.execute('TRUNCATE TABLE scrapedURLs')
         
     @handleErrors(default_return_value=None)
     @monitorTiming 
